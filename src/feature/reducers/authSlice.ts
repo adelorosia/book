@@ -29,6 +29,18 @@ export const registerApiUser = createAsyncThunk(
   }
 );
 
+export const loginApiUser = createAsyncThunk(
+  "/auth/loginApiUser",
+  async (initialUser: TUser) => {
+    try {
+      const response = await loginUser(initialUser);
+      return response.data;
+    } catch (error: any) {
+      throw error.response.data.message;
+    }
+  }
+);
+
 export const verifyApiAccount = createAsyncThunk(
   "/auth/verifyApiAccount",
   async (token: string) => {
@@ -37,18 +49,6 @@ export const verifyApiAccount = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       throw error.response.data.message;
-    }
-  }
-);
-
-export const loginApiUser = createAsyncThunk(
-  "/auth/loginApiUser",
-  async (initialUser: TUser) => {
-    try {
-      const response = await loginUser(initialUser);
-      return response.data;
-    } catch (error: any) {
-      return error.response.data.message;
     }
   }
 );
@@ -72,8 +72,9 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(registerApiUser.fulfilled, authAdapter.setAll)
-      .addCase(verifyApiAccount.fulfilled, authAdapter.setAll);
+      .addCase(registerApiUser.fulfilled, authAdapter.addOne)
+      .addCase(verifyApiAccount.fulfilled, authAdapter.setAll)
+      .addCase(loginApiUser.fulfilled, authAdapter.addOne);
   },
 });
 

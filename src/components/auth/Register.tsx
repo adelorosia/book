@@ -50,13 +50,13 @@ const Register = () => {
     onSubmit: async (values) => {
       try {
         const response = await dispatch(registerApiUser(values)).unwrap();
-        console.log(response)
         NotificationService.success(response.message);
         dispatch(setVerifyAccountToken(response.verifyAccountToken))
         setTimeout(() => {
           dispatch(setIsLoginFormOpen(true));
         }, 3000);
       } catch (error: any) {
+    
         NotificationService.error(error.message);
       }
     },

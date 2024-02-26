@@ -3,16 +3,15 @@ import { NavLink, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
-
-import { RootState } from "../../feature/store";
+import { AppDispatch, RootState } from "../../feature/store";
 import { NotificationService } from "../../feature/services/notificationServices";
-import { setIsLoginFormOpen } from "../../feature/reducers/authSlice";
-
-
+import {
+  loginApiUser,
+  setIsLoginFormOpen,
+} from "../../feature/reducers/authSlice";
 
 const Login = () => {
-
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const navigate = useNavigate();
   const formSchema = Yup.object({
@@ -33,11 +32,14 @@ const Login = () => {
     },
     onSubmit: async (values) => {
       try {
+        const response = await dispatch(loginApiUser(values)).unwrap();
+        NotificationService.success(response.message);
+        console.log("first");
         setTimeout(() => {
           navigate("/home", { replace: true });
         }, 3000);
       } catch (error: any) {
-        NotificationService.error(error.data.message);
+        NotificationService.error(error.message);
       }
     },
     validationSchema: formSchema,
@@ -95,7 +97,7 @@ const Login = () => {
         </div>
         <button
           className="btn btn-primary"
-          onClick={()=>dispatch(setIsLoginFormOpen(false))}
+          onClick={() => dispatch(setIsLoginFormOpen(false))}
         >
           Register
         </button>
